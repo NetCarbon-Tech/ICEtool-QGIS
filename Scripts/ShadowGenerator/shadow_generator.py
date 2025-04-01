@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
-"""
-/***************************************************************************
+"""/***************************************************************************
  ShadowGenerator
                                  A QGIS plugin
  Simulate casting shadows
@@ -145,7 +144,6 @@ class ShadowGenerator(object):
         status_tip=None,
         whats_this=None,
         parent=None):
-
         """Add a toolbar icon to the toolbar.
 
         :param icon_path: Path to the icon for this action. Can be a resource
@@ -184,7 +182,6 @@ class ShadowGenerator(object):
             added to self.actions list.
         :rtype: QAction
         """
-
         icon = QIcon(icon_path)
         action = QAction(icon, text, parent)
         action.triggered.connect(callback)
@@ -210,7 +207,6 @@ class ShadowGenerator(object):
 
     def initGui(self):
         """Create the menu entries and toolbar icons inside the QGIS GUI."""
-
         icon_path = ':/plugins/ShadowGenerator/ShadowIcon.png'
         self.add_action(
             icon_path,
@@ -392,7 +388,7 @@ class ShadowGenerator(object):
             wheight = 0
             waspect = 0
 
-        if folderPath is 'None':
+        if folderPath == 'None':
             QMessageBox.critical(None, "Error", "No selected folder")
             return
         else:
@@ -415,6 +411,14 @@ class ShadowGenerator(object):
 
             tv = [year, month, day, hour, minu, sec]
             intervalTime = self.dlg.intervalTimeEdit.time()
+
+            # extract parameter logs
+            param_file = os.path.join(ProjectPath, 'Step_3', "parameters_log.txt")
+            with open(param_file, "w") as f:
+                f.write("Parameters used in processAlgorithm:\n")
+                f.write(f"utc: {UTC}\n")
+                f.write(f"tv: {tv}\n")
+
             self.timeInterval = intervalTime.minute() + (intervalTime.hour() * 60) + (intervalTime.second()/60)
             shadowresult = dsh.dailyshading(dsm, vegdsm, vegdsm2, scale, lon, lat, sizex, sizey, tv, UTC, usevegdem,
                                        self.timeInterval, onetime, self.dlg, folderPath, gdal_dsm, trans, 
