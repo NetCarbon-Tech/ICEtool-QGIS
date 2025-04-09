@@ -1,13 +1,12 @@
-"""
- -----------------------------------------------------------------------------------------------------------
- Original Author:  Arthur Evrard
- Contributors:
- Last edited by: Arthur Evrard
- Repository:  https://github.com/Art-Ev/ICEtool
- Created:    2021-11-12 (Arthur Evrard)
- Updated:
-    Remove updt height and radius as it's now integrated into the input process
- -----------------------------------------------------------------------------------------------------------
+"""-----------------------------------------------------------------------------------------------------------
+Original Author:  Arthur Evrard
+Contributors:
+Last edited by: Arthur Evrard
+Repository:  https://github.com/Art-Ev/ICEtool
+Created:    2021-11-12 (Arthur Evrard)
+Updated:
+Remove updt height and radius as it's now integrated into the input process
+-----------------------------------------------------------------------------------------------------------
 """
 
 from qgis.core import QgsProcessing
@@ -16,10 +15,7 @@ from qgis.core import QgsProcessingMultiStepFeedback
 from qgis.core import QgsProcessingParameterVectorLayer
 from qgis.core import QgsProcessingParameterField
 from qgis.core import QgsProcessingParameterExtent
-from qgis.core import QgsProcessingParameterNumber
-from qgis.core import QgsProcessingParameterDefinition
 from qgis.core import QgsProject
-from qgis.core import Qgis
 import processing
 import os
 
@@ -84,6 +80,15 @@ class CreateRastersTreePoly(QgsProcessingAlgorithm):
         }
         outputs['Tree_raster'] = processing.run('gdal:rasterize', alg_params, context=context, feedback=feedback, is_child_algorithm=True)
         
+        # Create parameters logs
+        param_file = os.path.join(ProjectPath, 'Step_2', "parameters_log.txt")
+
+        with open(param_file, "w") as f:
+            f.write("Parameters used in processAlgorithm:\n")
+            for key, value in parameters.items():
+                f.write(f"{key}: {value}\n")
+
+        feedback.pushInfo(f"Parameters saved to {param_file}")
         return results
 
     def name(self):

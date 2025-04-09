@@ -1,15 +1,14 @@
 # -*- coding: utf-8 -*-
-"""
- -----------------------------------------------------------------------------------------------------------
- Original Author:  Arthur Evrard
- Contributors:
- Last edited by: Arthur Evrard
- Repository:  https://github.com/Art-Ev/ICEtool
- Created:    2021-11-12 (Arthur Evrard)
- Updated:
-   2022-02-02   Fix Stefan - Boltzman constant
-   2022-09-22   Adding in ground & evapotranspiration calculation (merge Marceau L.'s work) 
- -----------------------------------------------------------------------------------------------------------
+"""-----------------------------------------------------------------------------------------------------------
+Original Author:  Arthur Evrard
+Contributors:
+Last edited by: Arthur Evrard
+Repository:  https://github.com/Art-Ev/ICEtool
+Created:    2021-11-12 (Arthur Evrard)
+Updated:
+2022-02-02   Fix Stefan - Boltzman constant
+2022-09-22   Adding in ground & evapotranspiration calculation (merge Marceau L.'s work) 
+-----------------------------------------------------------------------------------------------------------
 """
 
 from qgis.core import QgsProcessing
@@ -25,7 +24,6 @@ from qgis.core import QgsProject
 from qgis.core import Qgis
 from qgis.core import QgsVectorLayer
 import processing
-import time
 import sys
 import os
 import statistics
@@ -250,7 +248,7 @@ class ComputeGroundTemperatureCSV(QgsProcessingAlgorithm):
             other_hours["Shadow_1"]=0
 
         for h in range(24):
-            if not(h+1 in Shadow_h):
+            if h+1 not in Shadow_h:
                 # Set shadow to 0 during night
                 other_hours.to_csv(os.path.join(ProjectPath, 'Step_4', 'Temp',str(h+1)+'.csv'),index=False, mode='w', header=True, sep=',')
 
@@ -525,6 +523,15 @@ class ComputeGroundTemperatureCSV(QgsProcessingAlgorithm):
         context.addLayerToLoadOnCompletion(result_layer.id(), QgsProcessingContext.LayerDetails("", QgsProject.instance(), ""))
 
         output_file=os.path.join(ProjectPath, 'Step_4', 'ComputedPoints.csv')
+
+        # extract parameters logs
+        param_file = os.path.join(ProjectPath, 'Step_4', "parameters_log.txt")
+        with open(param_file, "w") as f:
+            f.write("Parameters used in processAlgorithm:\n")
+            for key, value in parameters.items():
+                f.write(f"{key}: {value}\n")
+
+        feedback.pushInfo(f"Parameters saved to {param_file}")
 
         return {'Output': output_file}
 
