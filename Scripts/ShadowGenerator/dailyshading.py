@@ -32,7 +32,7 @@ def dailyshading(dsm, vegdsm, vegdsm2, scale, lon, lat, sizex, sizey, tv, UTC, u
         vegdem2[vegdem2 == dsm] = 0
 
         # Bush separation
-        bush = np.logical_not((vegdem2*vegdem))*vegdem
+        bush = np.logical_not((vegdem2 * vegdem)) * vegdem
 
     #     vegshtot = np.zeros((sizex, sizey))
     # else:
@@ -92,7 +92,7 @@ def dailyshading(dsm, vegdsm, vegdsm2, scale, lon, lat, sizex, sizey, tv, UTC, u
         alt[i] = 90. - sun['zenith']
         azi[i] = sun['azimuth']
 
-        if time['sec'] == 59: #issue 228 and 256
+        if time['sec'] == 59:  # issue 228 and 256
             time['sec'] = 0
             time['min'] = time['min'] + 1
             if time['min'] == 60:
@@ -105,7 +105,7 @@ def dailyshading(dsm, vegdsm, vegdsm2, scale, lon, lat, sizex, sizey, tv, UTC, u
         timestr = time_vector.strftime("%Y%m%d_%H%M")
 
         if alt[i] > 0:
-            if wallshadow == 1: # Include wall shadows (Issue #121)
+            if wallshadow == 1:  # Include wall shadows (Issue #121)
                 if usevegdem == 1:
                     vegsh, sh, _, wallsh, _, wallshve, _, _ = shadowingfunction_wallheight_23(dsm, vegdem, vegdem2,
                                                 azi[i], alt[i], scale, amaxvalue, bush, walls, dirwalls * np.pi / 180.)
@@ -124,7 +124,6 @@ def dailyshading(dsm, vegdsm, vegdsm2, scale, lon, lat, sizex, sizey, tv, UTC, u
                     filenamewallsh = folder + '/Facadeshadow_frombuilding_' + timestr + '_LST.tif'
                     saveraster(gdal_data, filenamewallsh, wallsh)
                     
-
             else:
                 if usevegdem == 0:
                     sh = shadow.shadowingfunctionglobalradiation(dsm, azi[i], alt[i], scale, dlg, 0)
@@ -134,7 +133,7 @@ def dailyshading(dsm, vegdsm, vegdsm2, scale, lon, lat, sizex, sizey, tv, UTC, u
                                                             bush, dlg, 0)
                     vegsh = shadowresult["vegsh"]
                     sh = shadowresult["sh"]
-                    sh=sh-(1-vegsh)*(1-psi)
+                    sh = sh - (1 - vegsh) * (1 - psi)
                     # vegshtot = vegshtot + sh
 
                 if onetime == 0:
@@ -156,9 +155,10 @@ def dailyshading(dsm, vegdsm, vegdsm2, scale, lon, lat, sizex, sizey, tv, UTC, u
 
     shadowresult = {'shfinal': shfinal, 'time_vector': time_vector}
 
-    dlg.progressBar.setValue(0)
+    # dlg.progressBar.setValue(0)
 
     return shadowresult
+
 
 def day_of_year(yy, month, day):
     if (yy % 4) == 0:
@@ -177,7 +177,7 @@ def day_of_year(yy, month, day):
     else:
         dayspermonth = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
 
-    doy = np.sum(dayspermonth[0:month-1]) + day
+    doy = np.sum(dayspermonth[0:month - 1]) + day
 
     return doy
 
@@ -187,11 +187,11 @@ def dectime_to_timevec(dectime):
 
     doy = np.floor(dectime)
 
-    DH = dectime-doy
+    DH = dectime - doy
     HOURS = int(24 * DH)
 
-    DM=24*DH - HOURS
-    MINS=int(60 * DM)
+    DM = 24 * DH - HOURS
+    MINS = int(60 * DM)
 
     DS = 60 * DM - MINS
     SECS = int(60 * DS)
